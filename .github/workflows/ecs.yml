@@ -2,7 +2,7 @@ name: Terraform AWS Deployment
 
 on:
   schedule:
-    - cron: '54 15 * * *' 
+    - cron: '57 15 * * *' 
   push:
     branches:
       - main
