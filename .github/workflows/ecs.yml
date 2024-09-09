@@ -1,86 +1,64 @@
-# name: Terraform AWS Deployment
-
-# on:
-#   schedule:
-#     - cron: '57 15 * * *' 
-#   push:
-#     branches:
-#       - main
-
-# jobs:
-#   terraform:
-#     name: Terraform Apply
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       # Checkout the code
-#       - name: Checkout code
-#         uses: actions/checkout@v2
-
-#       # Set up Terraform
-#       - name: Set up Terraform
-#         uses: hashicorp/setup-terraform@v2
-#         with:
-#           terraform_version: 1.4.0
-
-#       # Configure AWS credentials
-#       - name: Configure AWS credentials
-#         uses: aws-actions/configure-aws-credentials@v2
-#         with:
-#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#           aws-region: ap-south-1
-
-#       # Initialize Terraform
-#       - name: Terraform Init
-#         run: terraform init
-
-#       # Apply Terraform changes
-#       - name: Terraform Apply
-#         run: terraform destroy -auto-approve
-
-
-name: Terraform Destroy
+name: Terraform AWS Deployment
 
 on:
-  workflow_dispatch:  # Allows you to manually trigger the workflow from the GitHub UI
-  push:
-    branches:
-      - main  # Specify the branch to trigger destroy
+  schedule:
+    # Apply job will run daily at 15:30 UTC
+    - cron: '28 15 * * *'
+    # Destroy job will run daily at 15:50 UTC
+    - cron: '42 15 * * *'
+  workflow_dispatch:  # Allows manual trigger as well
 
 jobs:
-  terraform:
+  terraform-apply:
+    name: Terraform Apply
     runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' && github.event.schedule == '28 15 * * *'  # Run only at 15:30 UTC
 
     steps:
-    # Checkout the code
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    # Install Terraform CLI
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v2
-      with:
-        terraform_version: 1.5.0  # Specify your Terraform version
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.0
 
-    # Initialize Terraform (to download providers and prepare the state)
-    - name: Terraform Init
-      run: terraform init
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
 
-    # (Optional) Check the current Terraform Plan
-    - name: Terraform Plan
-      run: terraform plan
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Terraform Init
+        run: terraform init
 
-    # Perform Terraform destroy (this will destroy the infrastructure)
-    - name: Terraform Destroy
-      run: terraform destroy -auto-approve
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
 
-    # Optional: Log a message for successful destruction
-    - name: Clean up resources
-      run: echo "Terraform destroy completed successfully."
+  terraform-destroy:
+    name: Terraform Destroy
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' && github.event.schedule == '42 15 * * *'  # Run only at 15:50 UTC
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.0
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Destroy
+        run: terraform destroy -auto-approve
