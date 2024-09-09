@@ -42,19 +42,18 @@
 
 name: Terraform Destroy
 
-# Trigger the workflow manually or based on specific events
 on:
   workflow_dispatch:  # Allows you to manually trigger the workflow from the GitHub UI
   push:
     branches:
-      - main  # Specify a branch to trigger destroy on (for infrastructure)
+      - main  # Specify the branch to trigger destroy
 
 jobs:
   terraform:
     runs-on: ubuntu-latest
 
     steps:
-    # Checkout the code (this will NOT delete any source code)
+    # Checkout the code
     - name: Checkout code
       uses: actions/checkout@v3
 
@@ -64,15 +63,22 @@ jobs:
       with:
         terraform_version: 1.5.0  # Specify your Terraform version
 
-    # Initialize Terraform (this downloads the necessary Terraform providers)
+    # Initialize Terraform (to download providers and prepare the state)
     - name: Terraform Init
       run: terraform init
 
-    # Perform Terraform destroy (this will destroy the infrastructure, NOT the code)
+    # (Optional) Check the current Terraform Plan
+    - name: Terraform Plan
+      run: terraform plan
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    # Perform Terraform destroy (this will destroy the infrastructure)
     - name: Terraform Destroy
       run: terraform destroy -auto-approve
       env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}     # Store sensitive keys in GitHub Secrets
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
     # Optional: Log a message for successful destruction
