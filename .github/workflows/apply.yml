@@ -3,7 +3,7 @@ name: Terraform Apply
 on:
   schedule:
     # Apply job will run daily at 15:30 UTC
-    - cron: '35 15 * * *'
+    - cron: '40 15 * * *'
   workflow_dispatch:  # Allows manual trigger
 
 jobs:
