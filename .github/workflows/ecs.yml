@@ -1,40 +1,80 @@
-name: Terraform AWS Deployment
+# name: Terraform AWS Deployment
 
+# on:
+#   schedule:
+#     - cron: '57 15 * * *' 
+#   push:
+#     branches:
+#       - main
+
+# jobs:
+#   terraform:
+#     name: Terraform Apply
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       # Checkout the code
+#       - name: Checkout code
+#         uses: actions/checkout@v2
+
+#       # Set up Terraform
+#       - name: Set up Terraform
+#         uses: hashicorp/setup-terraform@v2
+#         with:
+#           terraform_version: 1.4.0
+
+#       # Configure AWS credentials
+#       - name: Configure AWS credentials
+#         uses: aws-actions/configure-aws-credentials@v2
+#         with:
+#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#           aws-region: ap-south-1
+
+#       # Initialize Terraform
+#       - name: Terraform Init
+#         run: terraform init
+
+#       # Apply Terraform changes
+#       - name: Terraform Apply
+#         run: terraform destroy -auto-approve
+
+
+name: Terraform Destroy
+
+# Trigger the workflow manually or based on certain conditions
 on:
-  schedule:
-    - cron: '57 15 * * *' 
+  workflow_dispatch:  # Allows you to manually trigger the workflow from the GitHub UI
   push:
     branches:
-      - main
+      - main  # Specify a branch to trigger destroy on, if needed
 
 jobs:
   terraform:
-    name: Terraform Apply
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the code
-      - name: Checkout code
-        uses: actions/checkout@v2
+    # Checkout the code
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      # Set up Terraform
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.4.0
+    # Install Terraform CLI
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.5.0  # Specify your Terraform version
 
-      # Configure AWS credentials
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-south-1
+    # Initialize Terraform (needed before destroy)
+    - name: Terraform Init
+      run: terraform init
 
-      # Initialize Terraform
-      - name: Terraform Init
-        run: terraform init
+    # Destroy Terraform resources
+    - name: Terraform Destroy
+      run: terraform destroy -auto-approve
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}     # Store sensitive keys in GitHub Secrets
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      # Apply Terraform changes
-      - name: Terraform Apply
-        run: terraform destroy -auto-approve
+    # Optional: Clean up any remaining resources or perform logging
+    - name: Clean up resources
+      run: echo "Resources destroyed successfully."
