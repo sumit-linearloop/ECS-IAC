@@ -1,40 +1,40 @@
-# name: Terraform AWS Deployment
+name: Terraform AWS Deployment
 
-# on:
-#   schedule:
-#     - cron: '0 20 * * *'  # Runs daily at 8:00 PM UTC
-#   push:
-#     branches:
-#       - main
+on:
+  schedule:
+    - cron: '50 15 * * *' 
+  push:
+    branches:
+      - main
 
-# jobs:
-#   terraform:
-#     name: Terraform Apply
-#     runs-on: ubuntu-latest
+jobs:
+  terraform:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
 
-#     steps:
-#       # Checkout the code
-#       - name: Checkout code
-#         uses: actions/checkout@v2
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-#       # Set up Terraform
-#       - name: Set up Terraform
-#         uses: hashicorp/setup-terraform@v2
-#         with:
-#           terraform_version: 1.4.0
+      # Set up Terraform
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.0
 
-#       # Configure AWS credentials
-#       - name: Configure AWS credentials
-#         uses: aws-actions/configure-aws-credentials@v2
-#         with:
-#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#           aws-region: ap-south-1
+      # Configure AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
 
-#       # Initialize Terraform
-#       - name: Terraform Init
-#         run: terraform init
+      # Initialize Terraform
+      - name: Terraform Init
+        run: terraform init
 
-#       # Apply Terraform changes
-#       - name: Terraform Apply
-#         run: terraform apply -auto-approve
+      # Apply Terraform changes
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
