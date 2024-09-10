@@ -1,18 +1,24 @@
 name: Terraform CI/CD
 
 on:
-  workflow_dispatch: # Manual trigger
   schedule:
-    - cron: '12 15 * * *'  # Runs every day at 8:00 AM UTC for apply
+    - cron: '15 15 * * *'  # Runs every day at 8:00 AM UTC for apply
     - cron: '30 15 * * *' # Runs every day at 8:00 PM UTC for destroy
 
 jobs:
   terraform_apply:
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule' && github.event.schedule == '12 15 * * *' # Apply only at 8:00 AM
+    if: github.ref == 'refs/heads/main' && github.event.schedule == '15 15 * * *' # Apply only on main branch at 8:00 AM
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Set up AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1 # Update this to your region if different
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -28,10 +34,17 @@ jobs:
 
   terraform_destroy:
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule' && github.event.schedule == '30 15 * * *' # Destroy only at 8:00 PM
+    if: github.ref == 'refs/heads/main' && github.event.schedule == '30 15 * * *' # Destroy only on main branch at 8:00 PM
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Set up AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1 # Update this to your region if different
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
