@@ -1,8 +1,8 @@
 # name: Terraform CI/CD
 
-# on:
-#   schedule:
-#     - cron: '32 16 * * *'  # Runs every day at 10:00 PM UTC
+on:
+  schedule:
+    - cron: '32 16 * * *'  # Runs every day at 10:00 PM UTC
 
 # jobs:
 #   terraform:
