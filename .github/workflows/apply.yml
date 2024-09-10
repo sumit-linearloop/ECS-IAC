@@ -2,13 +2,13 @@ name: Terraform CI/CD
 
 on:
   schedule:
-    - cron: '15 15 * * *'  # Runs every day at 8:00 AM UTC for apply
-    - cron: '30 15 * * *' # Runs every day at 8:00 PM UTC for destroy
+    - cron: '10 10 * * *'  # Runs every day at 8:00 AM UTC for apply
+    - cron: '25 10 * * *' # Runs every day at 8:00 PM UTC for destroy
 
 jobs:
   terraform_apply:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event.schedule == '15 15 * * *' # Apply only on main branch at 8:00 AM
+    if: github.ref == 'refs/heads/main' && github.event.schedule == '10 10 * * *' # Apply only on main branch at 8:00 AM
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -34,7 +34,7 @@ jobs:
 
   terraform_destroy:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event.schedule == '30 15 * * *' # Destroy only on main branch at 8:00 PM
+    if: github.ref == 'refs/heads/main' && github.event.schedule == '25 10 * * *' # Destroy only on main branch at 8:00 PM
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
