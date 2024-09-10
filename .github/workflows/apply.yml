@@ -2,7 +2,7 @@ name: Terraform CI/CD
 
 on:
   schedule:
-    - cron: '10 10 * * *'  # Runs every day at 8:00 AM UTC for apply
+    - cron: '15 10 * * *'  # Runs every day at 8:00 AM UTC for apply
     - cron: '25 10 * * *' # Runs every day at 8:00 PM UTC for destroy
 
 jobs:
