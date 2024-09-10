@@ -47,7 +47,7 @@ resource "aws_ecs_task_definition" "app" {
 
   container_definitions = jsonencode([{
     name         = "app",
-    image        = "sumit246/betterbugs:latest",
+    image        = "sumit246/sumit:latest",
     essential    = true
           portMappings = [
         {
