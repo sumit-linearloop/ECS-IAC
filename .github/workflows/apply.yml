@@ -3,13 +3,13 @@ name: Terraform CI/CD
 on:
   workflow_dispatch: # Manual trigger
   schedule:
-    - cron: '0 15 * * *'  # Runs every day at 8:00 AM UTC for apply
-    - cron: '20 15 * * *' # Runs every day at 8:00 PM UTC for destroy
+    - cron: '12 15 * * *'  # Runs every day at 8:00 AM UTC for apply
+    - cron: '30 15 * * *' # Runs every day at 8:00 PM UTC for destroy
 
 jobs:
   terraform_apply:
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule' && github.event.schedule == '0 15 * * *' # Apply only at 8:00 AM
+    if: github.event_name == 'schedule' && github.event.schedule == '12 15 * * *' # Apply only at 8:00 AM
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -28,7 +28,7 @@ jobs:
 
   terraform_destroy:
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule' && github.event.schedule == '20 15 * * *' # Destroy only at 8:00 PM
+    if: github.event_name == 'schedule' && github.event.schedule == '30 15 * * *' # Destroy only at 8:00 PM
     steps:
       - name: Checkout code
         uses: actions/checkout@v2

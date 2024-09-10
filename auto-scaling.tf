@@ -4,7 +4,7 @@ resource "aws_security_group" "ecs_node_sg" {
   vpc_id      = aws_vpc.my_vpc.id
 
   dynamic "ingress" {
-    for_each = [22, 80, 443, 6379, 1400]
+    for_each = [22, 80, 6379, 1400]
     iterator = port
     content {
       description = "TLS from VPC"
@@ -63,7 +63,7 @@ resource "aws_autoscaling_group" "ecs" {
   name_prefix               = "demo-ecs-asg-"
   vpc_zone_identifier       = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id]
   min_size                  = 1
-  max_size                  = 2
+  max_size                  = 1
   
 
 

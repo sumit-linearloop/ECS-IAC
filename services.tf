@@ -3,7 +3,7 @@ resource "aws_ecs_service" "app" {
   name            = "app"
   cluster         = aws_ecs_cluster.my_vpc.id
   task_definition = aws_ecs_task_definition.app.arn
-  desired_count   = 2
+  desired_count   = 1
 
     load_balancer {
     target_group_arn = aws_lb_target_group.app.arn
